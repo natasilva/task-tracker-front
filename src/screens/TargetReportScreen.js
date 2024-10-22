@@ -3,6 +3,7 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  FlatList,
   TouchableOpacity,
 } from "react-native";
 import {
@@ -200,6 +201,18 @@ const TargetReportScreen = () => {
 
         <VictoryAxis offsetY={40} />
       </VictoryChart>
+
+      <FlatList
+        data={data}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Text><Text style={{ fontWeight: 'bold' }}>{item.name}</Text> - {item.description}</Text>
+        )}
+        style={{
+          marginStart: 20,
+          marginTop: 50,
+        }}
+      />
     </View>
   );
 };
@@ -213,6 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 20,
+    paddingBottom: 10
   },
   dateContainer: {
     flexDirection: "row",
@@ -228,6 +242,7 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: 205,
+    height: 40,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
@@ -235,7 +250,7 @@ const styles = StyleSheet.create({
     // backgroundColor: '#f0f0f0',
     paddingHorizontal: 10,
     justifyContent: "center",
-    marginBottom: 70,
+    marginBottom: 30,
     marginStart: 20,
   },
   picker: {
@@ -248,6 +263,7 @@ const styles = StyleSheet.create({
     marginStart: 0,
     marginEnd: 0,
     marginBottom: 30,
+    fontWeight: 'bold',
     textAlign: "center",
   },
 });
