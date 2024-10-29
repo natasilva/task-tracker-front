@@ -86,13 +86,13 @@ const Lancamentos = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
+            {/* <View style={styles.headerContainer}>
                 <Text style={styles.header}>RESULTADOS</Text>
                 <Image
                     source={require('../../assets/correios-logo.png')}
                     style={styles.logo}
                 />
-            </View>
+            </View> */}
 
             {/* Seção de filtro de datas */}
             <View style={styles.filterSection}>
