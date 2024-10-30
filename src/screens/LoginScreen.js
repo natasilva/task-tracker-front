@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Card } from 'react-native-elements';
+import { Card, Image } from 'react-native-elements';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -36,7 +36,7 @@ const LoginScreen = () => {
 
         <TouchableOpacity
           style={styles.rectangularButton}
-          onPress={() => navigation.navigate('Results')}
+          onPress={() => navigation.replace('Results')}
         >
           <Text style={styles.buttonText}>ENTRAR</Text>
         </TouchableOpacity>

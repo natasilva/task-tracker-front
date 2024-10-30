@@ -8,12 +8,6 @@ export default function App() {
     <NavigationContainer>
       <AppRoutes />
     </NavigationContainer>
-    // <View style={styles.container}>
-    //   <Text>Hello world</Text>
-    //   <Button
-    //     title="Go to Login Screen"
-    //     onPress={() => navigation.navigate('Login')}
-    //   />    </View>
   );
 }
 

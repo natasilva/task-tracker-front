@@ -31,6 +31,12 @@ const Routes = () => {
           component={TargetReportScreen} 
           options={{ title: 'Relatório de Metas' }} 
         />
+
+        <Stack.Screen 
+          name="register" 
+          component={TargetReportScreen}
+          options={{ presentation: 'modal' }} 
+        />
       </Stack.Navigator>
   );
 };
