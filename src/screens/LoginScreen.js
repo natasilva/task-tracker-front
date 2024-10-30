@@ -2,11 +2,36 @@ import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Card, Image } from 'react-native-elements';
+import axios from "axios";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const [CAIXA, setCaixa] = useState('');
-  const [senha, setSenha] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const login = async () => {
+    const API_URL = process.env.API_URL;
+
+    try {
+      const response = await axios.post(`${API_URL}/users/login`, {
+        password,
+        cpf: email
+      });
+    
+      const data = response.data
+    
+      if (data.user) {
+        return navigation.replace(data.user.is_admin ? "TargetReport" : "Results")
+      }
+    } catch (err) {
+      console.log(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -20,23 +45,23 @@ const LoginScreen = () => {
         
         <TextInput
           style={styles.input}
-          placeholder="CAIXA"
-          value={CAIXA}
-          onChangeText={(text) => setCaixa(text)}
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
           keyboardType="numeric"
         />
 
         <TextInput
           style={styles.input}
-          placeholder="SENHA"
-          value={senha}
-          onChangeText={(text) => setSenha(text)}
+          placeholder="Senha"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
           secureTextEntry={true}
         />
 
         <TouchableOpacity
           style={styles.rectangularButton}
-          onPress={() => navigation.replace('Results')}
+          onPress={() => login()}
         >
           <Text style={styles.buttonText}>ENTRAR</Text>
         </TouchableOpacity>
