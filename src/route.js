@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
 import ResultsScreen from './screens/ResultsScreen';
 import TargetReportScreen from './screens/TargetReportScreen';
+import TotalizersScreen from './screens/TotalizersScreen';
 
 const Stack = createStackNavigator();
 
@@ -32,9 +33,10 @@ const Routes = () => {
           options={{ title: 'Relatório de Metas' }} 
         />
 
+        {/* Rota para o cadastro de resultados */}
         <Stack.Screen 
-          name="register" 
-          component={TargetReportScreen}
+          name="Register" 
+          component={TotalizersScreen}
           options={{ presentation: 'modal' }} 
         />
       </Stack.Navigator>

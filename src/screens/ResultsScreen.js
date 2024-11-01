@@ -28,6 +28,15 @@ const Lancamentos = () => {
 
   const flatListRef = useRef(null); // Referência para a FlatList, para rolar até o final
 
+  const formatDate = (date) => {
+    const value = new Date(date)
+    return value.toLocaleDateString("pt-BR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
   useEffect(() => {
     const API_URL = process.env.API_URL;
     const listResults = async () => {
@@ -39,8 +48,8 @@ const Lancamentos = () => {
             initialDate: startDate.toISOString().split("T")[0],
           },
         });
-        console.log(response.data);
         setResults(response.data);
+        console.log(results)
       } catch (err) {
         console.log(err);
         setError(err.message);
@@ -118,23 +127,22 @@ const Lancamentos = () => {
       {/* Lista de lançamentos */}
       <FlatList
         ref={flatListRef} // Referência para rolar a lista
-        data={results} // Dados a serem exibidos
-        keyExtractor={(item, index) => index} // Chave de cada item
+        data={results}
+        keyExtractor={(item, index) => index}
         renderItem={({ item }) => (
           <View style={styles.listItem}>
-            <Text>{item.data}</Text>
+            <Text>{item.validation_date ? formatDate(item.validation_date) : ''}</Text>
             <Text>{item.id ? "Lançamento Registrado" : "Não registrado"}</Text>
-            {!item.registrado && (
-              <Button
-                title="Registrar"
-                color="red"
-                onPress={() =>
-                  navigation.navigate("TargetReport", {
-                    date: item.validation_date,
-                  })
-                }
-              />
-            )}
+            <Button
+              title={item.id ? "Editar" : "Registrar"}
+              color="red"
+              onPress={() => {
+                const n_data = new Date(item.validation_date)
+                return navigation.navigate("Register", {
+                  date: n_data,
+                })
+              }}
+            />
           </View>
         )}
       />
