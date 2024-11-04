@@ -37,7 +37,7 @@ const Routes = () => {
         <Stack.Screen 
           name="Register" 
           component={TotalizersScreen}
-          options={{ presentation: 'modal' }} 
+          options={{ title: 'Cadastro de Resultado', presentation: 'modal' }} 
         />
       </Stack.Navigator>
   );

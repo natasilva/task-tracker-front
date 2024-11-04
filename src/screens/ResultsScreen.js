@@ -140,6 +140,7 @@ const Lancamentos = () => {
                 const n_data = new Date(item.validation_date)
                 return navigation.navigate("Register", {
                   date: n_data,
+                  id_result: item.id || null
                 })
               }}
             />
