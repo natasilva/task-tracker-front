@@ -26,10 +26,10 @@ const Lancamentos = () => {
 
   const [showRegistered, setShowRegistered] = useState(false);
 
-  const flatListRef = useRef(null); // Referência para a FlatList, para rolar até o final
+  const flatListRef = useRef(null);
 
   const formatDate = (date) => {
-    const value = new Date(date)
+    const value = new Date(date);
     return value.toLocaleDateString("pt-BR", {
       year: "numeric",
       month: "2-digit",
@@ -49,9 +49,7 @@ const Lancamentos = () => {
           },
         });
         setResults(response.data);
-        console.log(results)
       } catch (err) {
-        console.log(err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -64,21 +62,25 @@ const Lancamentos = () => {
   const navigation = useNavigation();
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#007BFF" />;
   }
 
   if (error) {
-    return <Text>Error: {error}</Text>;
+    return <Text style={styles.errorText}>Error: {error}</Text>;
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.filterSection}>
-        <Text>De:</Text>
-        <Button
-          title="Selecionar Data Início"
+        <Text style={styles.label}>De:</Text>
+        <TouchableOpacity
+          style={styles.dateButton}
           onPress={() => setShowStartDatePicker(true)}
-        />
+        >
+          <Text style={styles.dateButtonText}>
+            {formatDate(startDate) || "Selecionar Data Início"}
+          </Text>
+        </TouchableOpacity>
         {showStartDatePicker && (
           <DateTimePicker
             value={startDate}
@@ -87,17 +89,21 @@ const Lancamentos = () => {
             onChange={(event, selectedDate) => {
               setShowStartDatePicker(false);
               if (selectedDate) {
-                setStartDate(new Date(selectedDate.setHours(0, 0, 0, 0))); // Zera as horas
+                setStartDate(new Date(selectedDate.setHours(0, 0, 0, 0)));
               }
             }}
           />
         )}
 
-        <Text>Até:</Text>
-        <Button
-          title="Selecionar Data Fim"
+        <Text style={styles.label}>Até:</Text>
+        <TouchableOpacity
+          style={styles.dateButton}
           onPress={() => setShowEndDatePicker(true)}
-        />
+        >
+          <Text style={styles.dateButtonText}>
+            {formatDate(endDate) || "Selecionar Data Fim"}
+          </Text>
+        </TouchableOpacity>
         {showEndDatePicker && (
           <DateTimePicker
             value={endDate}
@@ -106,15 +112,14 @@ const Lancamentos = () => {
             onChange={(event, selectedDate) => {
               setShowEndDatePicker(false);
               if (selectedDate) {
-                setEndDate(new Date(selectedDate.setHours(0, 0, 0, 0))); // Zera as horas
+                setEndDate(new Date(selectedDate.setHours(0, 0, 0, 0)));
               }
             }}
           />
         )}
 
-        {/* Filtro para mostrar apenas registros marcados */}
         <View style={styles.checkboxContainer}>
-          <Text>Somente Registrados:</Text>
+          <Text style={styles.checkboxLabel}>Somente Registrados:</Text>
           <TouchableOpacity
             onPress={() => setShowRegistered(!showRegistered)}
             style={styles.checkbox}
@@ -124,101 +129,141 @@ const Lancamentos = () => {
         </View>
       </View>
 
-      {/* Lista de lançamentos */}
       <FlatList
-        ref={flatListRef} // Referência para rolar a lista
+        ref={flatListRef}
         data={results}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.listItem}>
             <Text>{item.validation_date ? formatDate(item.validation_date) : ''}</Text>
-            <Text>{item.id ? "Lançamento Registrado" : "Não registrado"}</Text>
-            <Button
-              title={item.id ? "Editar" : "Registrar"}
-              color="red"
+            <Text>{item.id ? "Registrado" : "Não registrado"}</Text>
+            <TouchableOpacity
+              style={item.id ? styles.editButton : styles.registerButton}
               onPress={() => {
-                const n_data = new Date(item.validation_date)
+                const n_data = new Date(item.validation_date);
                 return navigation.navigate("Register", {
                   date: n_data,
-                  id_result: item.id || null
-                })
+                  id_result: item.id || null,
+                });
               }}
-            />
+            >
+              <Text style={styles.actionButtonText}>
+                {item.id ? "Editar" : "Registrar"}
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       />
-
-      {/* Botão para rolar até o final da lista */}
-      <Button
-        title="Rolar até o final"
+      <TouchableOpacity
+        style={styles.scrollButton}
         onPress={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
+      >
+        <Text style={styles.scrollButtonText}>Rolar até o final</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-// Estilos para layout e apresentação
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#ffffff",
-    justifyContent: "center",
-  },
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "left",
-    marginRight: 10,
-  },
-  logo: {
-    width: 90,
-    height: 60,
-    marginRight: 5,
-    marginTop: -30,
-    left: 20,
+    backgroundColor: "#F0F4F8",
   },
   filterSection: {
-    marginTop: 20,
-    padding: 10,
-    borderWidth: 2,
-    borderColor: "#ccc",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
+  label: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 8,
+  },
+  dateButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
     borderRadius: 5,
-    marginBottom: 10,
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  dateButtonText: {
+    color: "#FFF",
+    fontSize: 16,
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginTop: 10,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    color: "#333",
   },
   checkbox: {
     width: 22,
     height: 22,
     borderWidth: 2,
-    borderColor: "grey",
+    borderColor: "#007BFF",
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 10,
-    marginRight: 10,
-    marginTop: 20,
-    marginBottom: 20,
   },
   checkboxText: {
-    color: "#008CBA",
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 16,
+    color: "#007BFF",
   },
   listItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E5E5",
+  },
+  actionButtonText: {
+    color: "#FFF",
+    fontSize: 14,
+  },
+  
+  editButton: {
+    backgroundColor: "#FFC107", // Cor para o botão de Editar (exemplo: Amarelo)
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  
+  registerButton: {
+    backgroundColor: "#28A745", // Cor para o botão de Registrar (exemplo: Verde)
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  actionButtonText: {
+    color: "#FFF",
+    fontSize: 14,
+  },
+  scrollButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  scrollButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+  },
+  errorText: {
+    color: "#FF0000",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 
