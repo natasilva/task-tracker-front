@@ -4,6 +4,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   FlatList,
+  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import {
@@ -67,23 +68,17 @@ const TargetReportScreen = () => {
 
     const listUsers = async () => {
       try {
-        const response = await axios.get(`${API_URL}/users/`, {
-          params: {
-            // admin: false
-          },
-        });
-        console.log(response.data)
+        const response = await axios.get(`${API_URL}/users/`);
         setUsers(response.data);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    listUsers()
-  }, [])
-
+    listUsers();
+  }, []);
 
   useEffect(() => {
     const getReport = async () => {
@@ -108,29 +103,28 @@ const TargetReportScreen = () => {
   }, [id_user, startDate, endDate]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#3498db" />;
   }
 
   if (error) {
-    return <Text>Error: {error}</Text>;
+    return <Text style={styles.errorText}>Error: {error}</Text>;
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+    {/* <View style={styles.container}> */}
       <View style={styles.header}>
-        {/* Container dos inputs de data */}
         <View style={styles.dateContainer}>
           <TouchableOpacity onPress={showStartPicker} style={styles.input}>
-            <Text>{formatDate(startDate)}</Text>
+            <Text style={styles.inputText}>{formatDate(startDate)}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={showEndPicker} style={styles.input}>
-            <Text>{formatDate(endDate)}</Text>
+            <Text style={styles.inputText}>{formatDate(endDate)}</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Input de atendente */}
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={id_user}
@@ -138,16 +132,11 @@ const TargetReportScreen = () => {
           onValueChange={(id) => setUser(id)}
         >
           {users.map((user) => (
-            <Picker.Item
-              key={user.id}
-              label={user.name}
-              value={user.id}
-            />
+            <Picker.Item key={user.id} label={user.name} value={user.id} />
           ))}
         </Picker>
       </View>
 
-      {/* Modal para Data Inicial */}
       <DateTimePickerModal
         isVisible={isStartPickerVisible}
         mode="date"
@@ -155,7 +144,6 @@ const TargetReportScreen = () => {
         onCancel={hideStartPicker}
       />
 
-      {/* Modal para Data Final */}
       <DateTimePickerModal
         isVisible={isEndPickerVisible}
         mode="date"
@@ -163,30 +151,25 @@ const TargetReportScreen = () => {
         onCancel={hideEndPicker}
       />
 
-      <Text style={styles.text}>Percentual atingido x Meta </Text>
+      <Text style={styles.chartTitle}>Percentual atingido x Meta</Text>
       <VictoryChart
-        domainPadding={{ x: 50, y: 50 }}
-        padding={{ top: 10, bottom: 15, left: 80, right: 30 }}
+        domainPadding={{ x: 50, y: 50 }}  
+        padding={{ top: 10, bottom: 15, left: 60, right: 30 }}
       >
-        <VictoryGroup
-          offset={15}
-          colorScale={"qualitative"}
-          horizontal
-          barRatio={0.8}
-        >
+        <VictoryGroup offset={15} colorScale={"qualitative"} horizontal barRatio={0.8}>
           <VictoryBar
             data={data}
             x="name"
             y="targetvalue"
             barWidth={15}
-            style={{ data: { fill: "red" } }}
+            style={{ data: { fill: "#e74c3c" } }}
           />
           <VictoryBar
             data={data}
             x="name"
             y="achievedvalue"
             barWidth={15}
-            style={{ data: { fill: "blue" } }}
+            style={{ data: { fill: "#3498db" } }}
           />
         </VictoryGroup>
 
@@ -202,68 +185,94 @@ const TargetReportScreen = () => {
         <VictoryAxis offsetY={40} />
       </VictoryChart>
 
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text><Text style={{ fontWeight: 'bold' }}>{item.name}</Text> - {item.description}</Text>
-        )}
-        style={{
-          marginStart: 20,
-          marginTop: 50,
-        }}
-      />
-    </View>
+      {
+        data.map((item) => (
+          <Text style={styles.listItem}>
+            <Text style={styles.boldText}>{item.name}</Text> - {item.description}
+          </Text>
+        ))
+      }
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: "#f9f9f9",
+  },
   container: {
     flex: 1,
-    justifyContent: "flex-start",
+    padding: 20,
+    backgroundColor: "#f9f9f9",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 20,
-    paddingBottom: 10
   },
   dateContainer: {
     flexDirection: "row",
     justifyContent: "flex-start",
+    marginBottom: 15,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ddd",
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 10,
     marginRight: 10,
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  inputText: {
+    fontSize: 16,
     textAlign: "center",
+    color: "#333",
   },
   pickerContainer: {
-    width: 205,
-    height: 40,
     borderWidth: 1,
     borderColor: "#ddd",
-    borderRadius: 5,
+    borderRadius: 10,
     overflow: "hidden",
-    // backgroundColor: '#f0f0f0',
-    paddingHorizontal: 10,
-    justifyContent: "center",
     marginBottom: 30,
-    marginStart: 20,
+    backgroundColor: "#ffffff",
   },
   picker: {
     height: 50,
-    width: 200,
+    width: "100%",
     color: "#333",
   },
-  text: {
+  chartTitle: {
     fontSize: 20,
-    marginStart: 0,
-    marginEnd: 0,
-    marginBottom: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+    color: "#2c3e50",
+  },
+  listItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    backgroundColor: "#ffffff",
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  boldText: {
+    fontWeight: "bold",
+  },
+  flatList: {
+    marginTop: 20,
+  },
+  errorText: {
+    color: "red",
     textAlign: "center",
   },
 });
