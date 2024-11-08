@@ -24,7 +24,19 @@ const Routes = () => {
       <Stack.Screen
         name="Results"
         component={ResultsScreen}
-        options={{ title: 'Listagem de Resultados Diários' }}
+        options={({ navigation }) => ({
+          title: 'Listagem de Resultados Diários',
+          headerRight: () => (
+            <TouchableOpacity
+              style={{ marginRight: 15 }}
+              onPress={() => {
+                navigation.replace('Login');
+              }}
+            >
+              <Text style={{ color: '#007bff', fontSize: 16 }}>Sair</Text>
+            </TouchableOpacity>
+          )
+        })}
       />
 
       {/* Rota para o relatório de metas */}
